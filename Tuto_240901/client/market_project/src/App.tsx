@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 function App() {
@@ -15,9 +15,10 @@ function App() {
         param: "id",
         where: `email="${ID}" and password="${PW}"`,
       });
-      console.log(response);
+      // console.log(response.data[0].token);
 
-      if (response.data && response.data.length > 0) {
+      if (response.data[0].token) {
+        localStorage.setItem("pass", response.data[0].token);
         setSuccess("Login successful!");
         setError(""); // 에러 메시지 초기화
       } else {
@@ -30,6 +31,18 @@ function App() {
       setSuccess("");
     }
   };
+
+  const logout = () => {
+    localStorage.removeItem("pass");
+    setID("");
+    setPW("");
+  };
+
+  useEffect(() => {
+    if (localStorage.getItem("pass") != null) {
+      setSuccess("Login successful!");
+    }
+  }, []);
 
   return (
     <>
@@ -49,6 +62,7 @@ function App() {
       />
       <p />
       <button onClick={setLogin}>Login</button>
+      <button onClick={logout}>Logout</button>
       {error && <p style={{ color: "red" }}>{error}</p>}
       {success && <p style={{ color: "green" }}>{success}</p>}
     </>
